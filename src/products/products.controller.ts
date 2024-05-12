@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { PRODUCT_SERVICE } from 'src/config';
 
@@ -36,15 +36,22 @@ export class ProductsController {
 
   @Get(':id')
   async findOneProduct(@Param('id') id: number) {
-    try {
-      const product = await firstValueFrom(
-        this.productsClient.send({ cmd: 'find_product_by_id' }, { id }),
-      );
+    return this.productsClient.send({ cmd: 'find_product_by_id' }, { id }).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
+      }),
+    );
 
-      return product;
-    } catch (error) {
-      throw new RpcException(error);
-    }
+    // igual que arriba pero usando firstValueFrom, que convierte el Observable en una Promesa
+    // try {
+    //   const product = await firstValueFrom(
+    //     this.productsClient.send({ cmd: 'find_product_by_id' }, { id }),
+    //   );
+
+    //   return product;
+    // } catch (error) {
+    //   throw new RpcException(error);
+    // }
   }
 
   @Patch(':id')
