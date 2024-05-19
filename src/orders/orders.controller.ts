@@ -9,11 +9,11 @@ import {
   Inject,
   // Query,
 } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+
 import { ORDER_SERVICE } from 'src/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -23,6 +23,8 @@ export class OrdersController {
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
+    // console.log(createOrderDto);
+    // return createOrderDto;
     return this.ordersClient.send('createOrder', createOrderDto);
   }
 
