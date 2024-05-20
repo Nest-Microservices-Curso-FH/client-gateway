@@ -8,14 +8,15 @@ import {
   // Delete,
   Inject,
   ParseUUIDPipe,
+  Query,
   // Query,
 } from '@nestjs/common';
 
 import { ORDER_SERVICE } from 'src/config';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { PaginationDto } from 'src/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { firstValueFrom } from 'rxjs';
+import { OrderPaginationDto } from './dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -25,30 +26,24 @@ export class OrdersController {
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
-    // console.log(createOrderDto);
-    // return createOrderDto;
     return this.ordersClient.send('createOrder', createOrderDto);
   }
 
   @Get()
-  findAll() {
-    return this.ordersClient.send('findAllOrders', {});
+  findAll(@Query() orderPaginationDto: OrderPaginationDto) {
+    return this.ordersClient.send('findAllOrders', orderPaginationDto);
   }
 
   @Get(':id')
-  async findOne(@Param('id', ) id: string) {
+  async findOne(@Param('id') id: string) {
     try {
-
       const order = await firstValueFrom(
-        this.ordersClient.send('findOneOrder', {id})
-      )
-      
-      return order
+        this.ordersClient.send('findOneOrder', { id }),
+      );
 
+      return order;
     } catch (error) {
-
-      throw new RpcException(error)
-      
+      throw new RpcException(error);
     }
   }
 }
