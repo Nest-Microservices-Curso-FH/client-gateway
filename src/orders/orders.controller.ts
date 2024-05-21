@@ -9,6 +9,7 @@ import {
   Inject,
   ParseUUIDPipe,
   Query,
+  Patch,
   // Query,
 } from '@nestjs/common';
 
@@ -51,15 +52,32 @@ export class OrdersController {
   @Get(':status')
   async findOneByStatus(
     @Param() statusDto: StatusDto,
-    @Query() paginationDTO: PaginationDto
+    @Query() paginationDTO: PaginationDto,
   ) {
     try {
-
       return this.ordersClient.send('findAllOrders', {
         ...PaginationDto,
-        status: statusDto.status
+        status: statusDto.status,
       });
+    } catch (error) {
+      throw new RpcException(error);
+    }
+  }
 
+  @Patch(':id')
+  async changeStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() statusDto: StatusDto,
+  ) {
+    try {
+      const order = await firstValueFrom(
+        this.ordersClient.send('changeOrderStatus', {
+          id,
+          status: statusDto.status,
+        }),
+      );
+
+      return order;
     } catch (error) {
       throw new RpcException(error);
     }
