@@ -20,8 +20,8 @@ export class RpcCustomExceptionFilter implements ExceptionFilter {
     if (rcpErrorStr.includes('Empty response')) {
       return response.status(500).json({
         status: 500,
-        message: rcpErrorStr.substring(0, rcpErrorStr.indexOf('(') -1)
-      })
+        message: rcpErrorStr.substring(0, rcpErrorStr.indexOf('(') - 1),
+      });
     }
 
     if (
