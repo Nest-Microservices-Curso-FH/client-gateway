@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { NATS_SERVICE } from 'src/config';
 import { LoginUserDto, RegisterUserDto } from './dto';
@@ -15,17 +23,17 @@ export class AuthController {
   registerUser(@Body() registerUserDto: RegisterUserDto) {
     return this.client.send('auth.register.user', registerUserDto).pipe(
       catchError((error) => {
-      throw new RpcException(error)
-    })
-  );
+        throw new RpcException(error);
+      }),
+    );
   }
 
   @Post('login')
   loginUser(@Body() loginUserDto: LoginUserDto) {
     return this.client.send('auth.login.user', loginUserDto).pipe(
       catchError((error) => {
-      throw new RpcException(error)
-    })
+        throw new RpcException(error);
+      }),
     );
   }
 
@@ -35,6 +43,6 @@ export class AuthController {
     // const user = req.user;
     // const token = req.token;
     // return this.client.send('auth.verify.user', {});
-    return {user, token}
+    return { user, token };
   }
 }
